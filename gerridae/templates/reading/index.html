@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block header %}{% block title %}Reading{% endblock %}{% endblock %}
+
+{% block content %}
+  <dl>
+  {% for reading in readings %}
+    <dt>{{ reading.meter_id }}</dt>
+    <dd>{% if reading.completed %}OK{% else %}NOT OK{% endif %}</dd>
+  {% endfor %}
+  </dl>
+  <p>{{ reading.meter_id }}</p>
+  {% if not reading.completed %}
+  <form method="post" action="{{ url_for('.index', reading_hash=reading.url_hash) }}">
+    <input type="text" name="meter_value">
+    <input type="submit" value="Submit">
+  </form>
+  {% else %}
+  <p>Thank you</p>
+  {% endif %}
+{% endblock %}

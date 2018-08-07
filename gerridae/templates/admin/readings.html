@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block header %}{% block title %}Admin{% endblock %}{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript">
+    window.onload = function () {
+      var box_all = document.getElementById('toggle_reminders');
+      if (box_all != null) {
+        box_all.addEventListener('click', function () {
+          var boxes = document.getElementsByName('reading_hashes')
+          for (var i=0; i<boxes.length; i++) {
+            if (!boxes[i].disabled) boxes[i].checked = box_all.checked
+          }
+        }, false);
+      }
+    };
+  </script>
+{% endblock %}
+
+{% block content %}
+  <div>
+    <span><a href="{{ url_for('.get_readings', p=period.prev.id) }}">&lt;&lt;&lt;</a></span>
+    <span>{{ period.start }} - {{ period.end }}</span>
+    <span><a href="{{ url_for('.get_readings', p=period.next.id) }}">&gt;&gt;&gt;</a></span>
+    <span><a href="{{ url_for('.get_readings') }}">Back to current</a></span>
+  </div>
+  {% if readings %}
+  <form method="post" action="{{ url_for('.send_reminders') }}">
+    <input type="hidden" name="p" value="{{ period.id }}">
+    <table>
+      <tr>
+        <td><input type="checkbox" id="toggle_reminders" checked></td>
+        <th>METER_ID</th>
+        <th>METER_VALUE</th>
+        <th>METER_READ</th>
+        <th>REMINDED_LAST</th>
+        <th>R_COUNT</th>
+      </tr>
+      {% for reading in readings %}
+      <tr>
+        <td><input type="checkbox" name="reading_hashes" value="{{ reading.url_hash }}" {% if reading.completed %}disabled{% else %}checked{% endif %}></td>
+        <td><a href="{{ reading.url }}" target="_blank">{{ reading.meter_id }}</a></td>
+        <td>{{ reading.meter_value }}</td>
+        <td>{{ reading.meter_read }}</td>
+        <td>{{ reading.reminded_last }}</td>
+        <td>{{ reading.reminder_count }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <span><input type="submit" value="Send reminders"></span>
+  </form>
+  {% else %}
+  <p>No readings found</p>
+  <form method="post" action="{{ url_for('.init_readings') }}">
+    <input type="hidden" name="p" value="{{ period.id }}">
+    <input type="submit" value="Generate stubs">
+  </form>
+  {% endif %}
+{% endblock %}

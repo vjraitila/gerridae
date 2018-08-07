@@ -1,0 +1,4 @@
+{{ _("Hello, %(meter_owner)s!", meter_owner=reading.meter.owner) }}
+
+{{ _("Report meter '%(meter_id)s' reading", meter_id=reading.meter_id) }} {{ _("here") }}:
+{{ reading.url }}
